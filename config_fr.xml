@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>ps_quotemanager</name>
+    <displayName><![CDATA[Devis Manager]]></displayName>
+    <version><![CDATA[0.0.1]]></version>
+    <description><![CDATA[Module de cr&eacute;ation et de traitement de devis pour Prestashop]]></description>
+    <author><![CDATA[PageFlottante]]></author>
+    <tab><![CDATA[front_office_features]]></tab>
+    <is_configurable>0</is_configurable>
+    <need_instance>0</need_instance>
+</module>
