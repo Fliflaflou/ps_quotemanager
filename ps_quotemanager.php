@@ -3,6 +3,10 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+require_once _PS_MODULE_DIR_ . 'ps_quotemanager/classes/Quote.php';
+require_once _PS_MODULE_DIR_ . 'ps_quotemanager/classes/QuoteProduct.php';
+require_once _PS_MODULE_DIR_ . 'ps_quotemanager/classes/QuoteStatus.php';
+
 class Ps_QuoteManager extends Module
 {
     public function __construct()
@@ -37,6 +41,13 @@ class Ps_QuoteManager extends Module
             $this->_errors[] = $this->l('Failed to install database');
             return false;
         }
+
+        // Installation des données par défaut
+        if (!$this->installDefaultData()) {
+            $this->_errors[] = $this->l('Failed to install default data');
+            return false;
+        }
+
 
         // Enregistrement des hooks
         $hooks = $this->getRegisteredHooks();
