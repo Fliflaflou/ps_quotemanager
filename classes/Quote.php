@@ -153,26 +153,22 @@ class Quote extends ObjectModel
          * 
          * @return string
          */
-        public function generateReference()
+        public static function generateReference()
         {
             $prefix = 'Q';
             $year = date('Y');
             $month = date('m');
             $pattern = $prefix . $year . $month;
             
-            // Get next number for this month
+            // Get next number for this month - REQUÊTE SUR UNE LIGNE
             $sql = sprintf(
-                'SELECT reference 
-                FROM %squote 
-                WHERE reference LIKE \'%s%%\'
-                ORDER BY reference DESC 
-                LIMIT 1',
+                'SELECT reference FROM %squote WHERE reference LIKE \'%s%%\' ORDER BY reference DESC LIMIT 1',
                 _DB_PREFIX_,
                 pSQL($pattern)
             );
             
             $last_reference = Db::getInstance()->getValue($sql);
-
+            
             if ($last_reference) {
                 // Extract number from reference (ex: Q20241201 → 1)
                 $last_number = (int)substr($last_reference, strlen($pattern));
@@ -205,6 +201,7 @@ class Quote extends ObjectModel
 
             return $reference;
         }
+
 
         /**
          * Get quote by reference
@@ -338,6 +335,7 @@ class Quote extends ObjectModel
             
             return true;
         }
+        
 
         /**
          * Convert quote to order
