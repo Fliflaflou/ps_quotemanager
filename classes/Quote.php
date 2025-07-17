@@ -1,6 +1,7 @@
 <?php
 class Quote extends ObjectModel
     {
+        public $id_quote;
         public $reference;
         public $id_customer;
         public $id_address_delivery;
@@ -145,6 +146,18 @@ class Quote extends ObjectModel
                 $this->total_shipping_wt = 0;
                 $this->total_paid = 0;
                 $this->total_paid_tax_excl = 0;
+                if ($this->id_customer) {
+                    $this->loadCustomerAddresses();
+                }
+            }
+        }
+
+        private function loadCustomerAddresses()
+        {
+            $customer = new Customer($this->id_customer);
+            if (Validate::isLoadedObject($customer)) {
+                $this->id_address_delivery = $customer->getDefaultAddressId($this->id_customer);
+                $this->id_address_invoice = $customer->getDefaultAddressId($this->id_customer);
             }
         }
 
@@ -160,9 +173,9 @@ class Quote extends ObjectModel
             $month = date('m');
             $pattern = $prefix . $year . $month;
             
-            // Get next number for this month - REQUÊTE SUR UNE LIGNE
+            // Get next number for this month
             $sql = sprintf(
-                'SELECT reference FROM %squote WHERE reference LIKE \'%s%%\' ORDER BY reference DESC LIMIT 1',
+                'SELECT reference FROM %squote WHERE reference LIKE \'%s%%\' ORDER BY reference DESC',
                 _DB_PREFIX_,
                 pSQL($pattern)
             );
@@ -274,6 +287,21 @@ class Quote extends ObjectModel
             
             return true;
         }
+        
+        /**
+         * Update totals and save quote
+         * @return bool
+         */
+        public function updateTotals()
+        {
+            if (!$this->calculateTotals()) {
+                return false;
+            }
+            
+            return $this->update();
+        }
+
+
 
         /**
          * Get quote products

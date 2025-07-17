@@ -6,8 +6,8 @@
         public $quantity;
         public $unit_price_tax_excl;
         public $unit_price_tax_incl;
-        public $total_price_tax_excl;
-        public $total_price_tax_incl;
+        public $price_tax_excl;
+        public $price_tax_incl;
         public $tax_rate;
         public $product_name;
         public $product_reference;
@@ -51,12 +51,12 @@
                     'validate' => 'isPrice',
                     'required' => true
                 ),
-                'total_price_tax_excl' => array(
+                'price_tax_excl' => array(
                     'type' => self::TYPE_FLOAT,
                     'validate' => 'isPrice',
                     'required' => true
                 ),
-                'total_price_tax_incl' => array(
+                'price_tax_incl' => array(
                     'type' => self::TYPE_FLOAT,
                     'validate' => 'isPrice',
                     'required' => true
@@ -159,8 +159,8 @@
                 }
 
                 // Calculate totals
-                $total_price_tax_excl = $unit_price_tax_excl * $quantity;
-                $total_price_tax_incl = $unit_price_tax_incl * $quantity;
+                $price_tax_excl = $unit_price_tax_excl * $quantity;
+                $price_tax_incl = $unit_price_tax_incl * $quantity;
 
                 // Calculate tax rate
                 $tax_rate = $unit_price_tax_excl > 0 ? (($unit_price_tax_incl - $unit_price_tax_excl) / $unit_price_tax_excl) * 100 : 0;
@@ -173,8 +173,8 @@
                 $quote_product->quantity = $quantity;
                 $quote_product->unit_price_tax_excl = $unit_price_tax_excl;
                 $quote_product->unit_price_tax_incl = $unit_price_tax_incl;
-                $quote_product->total_price_tax_excl = $total_price_tax_excl;
-                $quote_product->total_price_tax_incl = $total_price_tax_incl;
+                $quote_product->price_tax_excl = $price_tax_excl;
+                $quote_product->price_tax_incl = $price_tax_incl;
                 $quote_product->tax_rate = $tax_rate;
                 $quote_product->product_name = $product_info['name'];
                 $quote_product->product_reference = $product_info['reference'];
@@ -202,8 +202,8 @@
 
                 // Update quantity and totals
                 $quote_product->quantity = $quantity;
-                $quote_product->total_price_tax_excl = $quote_product->unit_price_tax_excl * $quantity;
-                $quote_product->total_price_tax_incl = $quote_product->unit_price_tax_incl * $quantity;
+                $quote_product->price_tax_excl = $quote_product->unit_price_tax_excl * $quantity;
+                $quote_product->price_tax_incl = $quote_product->unit_price_tax_incl * $quantity;
 
                 if ($quote_product->save()) {
                     // Update quote totals
@@ -358,8 +358,8 @@
             $sql = sprintf(
                 'SELECT 
                     SUM(quantity) as total_products,
-                    SUM(total_price_tax_excl) as total_tax_excl,
-                    SUM(total_price_tax_incl) as total_tax_incl
+                    SUM(price_tax_excl) as total_tax_excl,
+                    SUM(price_tax_incl) as total_tax_incl
                 FROM %squote_product
                 WHERE id_quote = %d',
                 _DB_PREFIX_,
@@ -374,6 +374,25 @@
                 'total_tax_incl' => $result['total_tax_incl'] ? (float)$result['total_tax_incl'] : 0
             );
         }
+
+        /**
+         * Récupère tous les produits d'un devis
+         * 
+         * @param int $id_quote ID du devis
+         * @return array Liste des produits
+         */
+        public static function getByQuote($id_quote)
+        {
+            if (!$id_quote) {
+                return array();
+            }
+            
+            $sql = 'SELECT * FROM `' . _DB_PREFIX_ . 'quote_product` 
+                    WHERE `id_quote` = ' . (int)$id_quote;
+            
+            return Db::getInstance()->executeS($sql);
+        }
+
 
         /**
          * Check if product is available for quote
@@ -424,8 +443,8 @@
                 $quote_product->quantity = $product['quantity'];
                 $quote_product->unit_price_tax_excl = $product['unit_price_tax_excl'];
                 $quote_product->unit_price_tax_incl = $product['unit_price_tax_incl'];
-                $quote_product->total_price_tax_excl = $product['total_price_tax_excl'];
-                $quote_product->total_price_tax_incl = $product['total_price_tax_incl'];
+                $quote_product->price_tax_excl = $product['price_tax_excl'];
+                $quote_product->price_tax_incl = $product['price_tax_incl'];
                 $quote_product->tax_rate = $product['tax_rate'];
                 $quote_product->product_name = $product['product_name'];
                 $quote_product->product_reference = $product['product_reference'];

@@ -84,37 +84,52 @@ try {
         
         // Test 5: Ajouter un produit au devis
         echo "\n4. Test ajout produit...\n";
-        $quote_product = new QuoteProduct();
-        $quote_product->id_quote = $quote->id;
-        $quote_product->id_product = 1; // Produit de test
-        $quote_product->id_product_attribute = 0;
-        $quote_product->quantity = 2;
-        $quote_product->unit_price_tax_excl = 10.00;
-        $quote_product->unit_price_tax_incl = 12.00;
         
-        if ($quote_product->save()) {
-            echo "✅ Produit ajouté au devis\n";
-            
-            // Test 6: Calculer les totaux
-            echo "\n5. Test calcul totaux...\n";
-            if ($quote->calculateTotals()) {
-                $quote->update();
-                echo "✅ Totaux calculés - Total HT: " . $quote->total_products . "€\n";
-                echo "✅ Totaux calculés - Total TTC: " . $quote->total_products_wt . "€\n";
-            } else {
-                echo "❌ Erreur calcul totaux\n";
-            }
-            
-            // Test 7: Récupérer les produits du devis
-            echo "\n6. Test récupération produits...\n";
-            $products = $quote->getProducts();
-            echo "Nombre de produits : " . count($products) . "\n";
-            foreach ($products as $product) {
-                echo "  - Produit ID: {$product['id_product']}, Qty: {$product['quantity']}, Prix HT: {$product['unit_price_tax_excl']}€\n";
-            }
-            
+        // Vérifier qu'un produit existe
+        $product_exists = Db::getInstance()->getValue('
+            SELECT p.id_product 
+            FROM ' . _DB_PREFIX_ . 'product p 
+            WHERE p.active = 1 
+        ');
+        if (!$product_exists) {
+            echo "❌ Aucun produit actif trouvé en base\n";
         } else {
-            echo "❌ Échec ajout produit\n";
+            echo "✅ Produit trouvé (ID: $product_exists)\n";
+            
+            // Utiliser la méthode addProductToQuote avec des prix explicites
+            $quote_product_result = QuoteProduct::addProductToQuote(
+                $quote->id,     // id_quote
+                $product_exists, // id_product
+                0,              // id_product_attribute
+                2,              // quantity
+                10.00,          // unit_price_tax_excl
+                12.00           // unit_price_tax_incl
+            );
+            
+            if ($quote_product_result !== false) {
+                echo "✅ Produit ajouté au devis\n";
+                
+                // Test 6: Calculer les totaux
+                echo "\n5. Test calcul totaux...\n";
+                if ($quote->calculateTotals()) {
+                    $quote->update();
+                    echo "✅ Totaux calculés - Total HT: " . $quote->total_products . "€\n";
+                    echo "✅ Totaux calculés - Total TTC: " . $quote->total_products_wt . "€\n";
+                } else {
+                    echo "❌ Erreur calcul totaux\n";
+                }
+                
+                // Test 7: Récupérer les produits du devis
+                echo "\n6. Test récupération produits...\n";
+                $products = $quote->getProducts();
+                echo "Nombre de produits : " . count($products) . "\n";
+                foreach ($products as $product) {
+                    echo "  - Produit ID: {$product['id_product']}, Qty: {$product['quantity']}, Prix HT: {$product['unit_price_tax_excl']}€\n";
+                }
+                
+            } else {
+                echo "❌ Échec ajout produit\n";
+            }
         }
         
     } else {
