@@ -2,7 +2,7 @@
 // test/test_crud.php
 
 // Depuis le fichier test/, on remonte d'un niveau vers le module, puis 2 niveaux vers PrestaShop
-$prestashop_root = dirname(__FILE__) . '/../../../';
+$prestashop_root = dirname(__FILE__) . '/../../../../';
 
 echo "=== VÉRIFICATION ENVIRONNEMENT ===\n";
 echo "Répertoire courant : " . getcwd() . "\n";
@@ -22,9 +22,9 @@ echo "✅ Configuration trouvée !\n";
 require_once($prestashop_root . 'config/config.inc.php');
 
 // Chargement de nos classes
-require_once dirname(__FILE__) . '/../classes/Quote.php';
-require_once dirname(__FILE__) . '/../classes/QuoteStatus.php';
-require_once dirname(__FILE__) . '/../classes/QuoteProduct.php';
+require_once dirname(__FILE__) . '/../../classes/Quote.php';
+require_once dirname(__FILE__) . '/../../classes/QuoteProduct.php';
+require_once dirname(__FILE__) . '/../../classes/QuoteStatus.php';
 
 echo "\n=== TEST CRUD MODULE QUOTE ===\n";
 

@@ -216,6 +216,33 @@ class Quote extends ObjectModel
             return $reference;
         }
 
+        /**
+         * Get all quotes with pagination
+         * 
+         * @param int $limit
+         * @param int $offset
+         * @param bool $active_only
+         * @return array
+         */
+        public static function getAllQuotes($limit = 10, $offset = 0, $status_filter = null)
+        {
+            $sql = new DbQuery();
+            $sql->select('q.*, c.firstname, c.lastname, qsl.name as status_name, qs.color as status_color')
+                ->from('quote', 'q')
+                ->leftJoin('customer', 'c', 'q.id_customer = c.id_customer')
+                ->leftJoin('quote_status', 'qs', 'q.id_quote_status = qs.id_quote_status')
+                ->leftJoin('quote_status_lang', 'qsl', 'qs.id_quote_status = qsl.id_quote_status AND qsl.id_lang = ' . (int)Context::getContext()->language->id);
+            // ✅ Filtre par statut si spécifié
+            if ($status_filter !== null) {
+                $sql->where('q.id_quote_status = ' . (int)$status_filter);
+            }
+            
+            $sql->orderBy('q.date_add DESC')
+                ->limit($limit, $offset);
+            
+            return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        }
+
 
         /**
          * Get quote by reference
