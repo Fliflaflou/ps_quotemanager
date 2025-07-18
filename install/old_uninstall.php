@@ -19,8 +19,8 @@ class Ps_QuoteManagerUninstaller
     protected static function cleanTempFiles()
     {
         $tempPaths = [
-            _PS_MODULE_DIR_ . 'ps_quotemanager/cache/',
-            _PS_MODULE_DIR_ . 'ps_quotemanager/tmp/',
+            _PS_MODULE_DIR_ . 'myquotemanager/cache/',
+            _PS_MODULE_DIR_ . 'myquotemanager/tmp/',
         ];
         
         foreach ($tempPaths as $path) {
@@ -34,7 +34,7 @@ class Ps_QuoteManagerUninstaller
     {
         // Ici on peut nettoyer des répertoires spécifiques si nécessaire
         // Par exemple des uploads de fichiers liés aux devis
-        $uploadPath = _PS_MODULE_DIR_ . 'ps_quotemanager/uploads/';
+        $uploadPath = _PS_MODULE_DIR_ . 'myquotemanager/uploads/';
         if (is_dir($uploadPath)) {
             self::removeDirectory($uploadPath);
         }

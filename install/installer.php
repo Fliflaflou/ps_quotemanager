@@ -2,7 +2,7 @@
 /**
  * Quote Manager Installation and Uninstallation Handler
  */
-class Ps_QuoteManagerInstaller
+class MyQuoteManagerInstaller
 {
     private $module;
     

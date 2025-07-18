@@ -1,4 +1,4 @@
-# Tests du module ps_quotemanager
+# Tests du module myquotemanager
 
 ## Tests d'intégration
 - `integration/test_crud.php` : Tests CRUD complets

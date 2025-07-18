@@ -3,11 +3,11 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-require_once _PS_MODULE_DIR_ . 'ps_quotemanager/classes/Quote.php';
-require_once _PS_MODULE_DIR_ . 'ps_quotemanager/classes/QuoteProduct.php';
-require_once _PS_MODULE_DIR_ . 'ps_quotemanager/classes/QuoteStatus.php';
+require_once _PS_MODULE_DIR_ . 'myquotemanager/classes/Quote.php';
+require_once _PS_MODULE_DIR_ . 'myquotemanager/classes/QuoteProduct.php';
+require_once _PS_MODULE_DIR_ . 'myquotemanager/classes/QuoteStatus.php';
 
-class Ps_QuoteManager extends Module
+class MyQuoteManager extends Module
 {
     public function __construct()
     {

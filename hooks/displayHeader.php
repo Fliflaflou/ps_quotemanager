@@ -10,7 +10,7 @@ class Ps_QuoteManagerDisplayHeaderHook implements HookInterface
     public function render(array $params): string
     {
         $this->module->registerStylesheet(
-            'module-ps_quotemanager-style',
+            'module-myquotemanager-style',
             'modules/'.$this->module->name.'/views/css/front.css',
             [
                 'media' => 'all',
@@ -19,7 +19,7 @@ class Ps_QuoteManagerDisplayHeaderHook implements HookInterface
         );
 
         $this->module->registerJavascript(
-            'module-ps_quotemanager-js',
+            'module-myquotemanager-js',
             'modules/'.$this->module->name.'/views/js/front.js',
             [
                 'position' => 'bottom',
