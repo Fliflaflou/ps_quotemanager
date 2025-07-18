@@ -212,6 +212,18 @@ class QuoteStatus extends ObjectModel {
         }
 
         /**
+         * Uninstall default quote statuses
+         * 
+         * @return bool
+         */
+        public static function uninstallDefaultStatuses()
+        {
+            $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'quote_status';
+            return Db::getInstance()->execute($sql);
+        }
+
+
+        /**
          * Get next position for new status
          * 
          * @return int
