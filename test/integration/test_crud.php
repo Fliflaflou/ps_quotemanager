@@ -105,6 +105,28 @@ try {
                 10.00,          // unit_price_tax_excl
                 12.00           // unit_price_tax_incl
             );
+
+                        // DEBUG : Vérifie en base directement
+            // echo "=== DEBUG BASE DE DONNÉES ===\n";
+            // $result = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'quote_product WHERE id_quote = ' . (int)$quote->id);
+            // echo "Produits en base : " . count($result) . "\n";
+            // if ($result) {
+            //     foreach ($result as $product) {
+            //         echo "- ID: {$product['id_quote_product']}, Produit: {$product['id_product']}, Qty: {$product['quantity']}\n";
+            //     }
+            // }
+
+            // // DEBUG : Teste la méthode getByQuote
+            // echo "=== DEBUG METHODE getByQuote ===\n";
+            // $products_method = QuoteProduct::getByQuote($quote->id);
+            // echo "Produits via getByQuote : " . count($products_method) . "\n";
+            // var_dump($products_method);
+
+            // // DEBUG : Teste la méthode getProducts du Quote
+            // echo "=== DEBUG METHODE getProducts ===\n";
+            // $products_quote = $quote->getProducts();
+            // echo "Produits via Quote->getProducts : " . count($products_quote) . "\n";
+            // var_dump($products_quote);
             
             if ($quote_product_result !== false) {
                 echo "✅ Produit ajouté au devis\n";
@@ -121,7 +143,7 @@ try {
                 
                 // Test 7: Récupérer les produits du devis
                 echo "\n6. Test récupération produits...\n";
-                $products = $quote->getProducts();
+                $products = QuoteProduct::getByQuote($quote->id);
                 echo "Nombre de produits : " . count($products) . "\n";
                 foreach ($products as $product) {
                     echo "  - Produit ID: {$product['id_product']}, Qty: {$product['quantity']}, Prix HT: {$product['unit_price_tax_excl']}€\n";

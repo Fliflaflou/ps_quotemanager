@@ -387,8 +387,18 @@
                 return array();
             }
             
-            $sql = 'SELECT * FROM `' . _DB_PREFIX_ . 'quote_product` 
-                    WHERE `id_quote` = ' . (int)$id_quote;
+             $sql = 'SELECT 
+                id_quote_product,
+                id_quote,
+                id_product,
+                id_product_attribute,
+                quantity,
+                unit_price_tax_excl,
+                unit_price_tax_incl,
+                (quantity * unit_price_tax_excl) as total_price_tax_excl,
+                (quantity * unit_price_tax_incl) as total_price_tax_incl
+            FROM `' . _DB_PREFIX_ . 'quote_product` 
+            WHERE `id_quote` = ' . (int)$id_quote;
             
             return Db::getInstance()->executeS($sql);
         }

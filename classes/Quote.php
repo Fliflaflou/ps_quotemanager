@@ -100,7 +100,8 @@ class Quote extends ObjectModel
                 'date_exp' => [
                     'type' => self::TYPE_DATE,
                     'validate' => 'isDate',
-                    'required' => false
+                    'required' => false,
+                    'allow_null' => true
                 ],
                 'message' => [
                     'type' => self::TYPE_HTML,
@@ -266,11 +267,11 @@ class Quote extends ObjectModel
          */
         public function calculateTotals()
         {
-            if (!$this->id_quote) {
+            if (!$this->id) {
                 return false;
             }
             
-            $products = QuoteProduct::getByQuote($this->id_quote);
+            $products = QuoteProduct::getByQuote($this->id);
             
             $total_products = 0;
             $total_products_wt = 0;
@@ -295,7 +296,10 @@ class Quote extends ObjectModel
         public function updateTotals()
         {
             if (!$this->calculateTotals()) {
-                return false;
+                return false; 
+            }
+            if (empty($this->date_exp) || $this->date_exp === '0000-00-00' || $this->date_exp === '0000-00-00 00:00:00') {
+                $this->date_exp = null;
             }
             
             return $this->update();
@@ -310,11 +314,11 @@ class Quote extends ObjectModel
          */
         public function getProducts()
         {
-            if (!$this->id_quote) {
+            if (!$this->id) {
                 return [];
             }
             
-            return QuoteProduct::getByQuote($this->id_quote);
+            return QuoteProduct::getByQuote($this->id);
         }
 
         /**

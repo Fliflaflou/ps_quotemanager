@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `PREFIX_quote` (
   `message` text DEFAULT NULL,
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
-  `date_exp` datetime DEFAULT NULL,
+  `date_exp` date DEFAULT NULL,
   PRIMARY KEY (`id_quote`),
   UNIQUE KEY `reference` (`reference`),
   KEY `id_customer` (`id_customer`),
