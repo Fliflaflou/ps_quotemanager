@@ -40,9 +40,9 @@ class MyQuoteManagerInstaller
     public function installDefaultData()
     {
         // Installation des statuts par défaut (délégué à la classe métier)
-        if (!QuoteStatus::installDefaultStatuses()) {
-            return false;
-        }
+        // if (!QuoteStatus::installDefaultStatuses()) {
+        //     return false;
+        // }
         return true;
     }
     
@@ -126,7 +126,8 @@ class MyQuoteManagerInstaller
         }
         
         // Remplacer le préfixe
-        $sql_content = str_replace('{PREFIX}', _DB_PREFIX_, $sql_content);
+        $sql_content = str_replace('PREFIX_', _DB_PREFIX_, $sql_content);
+        $sql_content = str_replace('ENGINE_TYPE', 'InnoDB', $sql_content);
         
         // Séparer les requêtes
         $queries = preg_split('/;\s*$/m', $sql_content);

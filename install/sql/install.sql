@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `PREFIX_quote` (
   `id_address_invoice` int(11) DEFAULT NULL,
   `id_lang` int(11) NOT NULL DEFAULT '1',
   `conversion_rate` decimal(13,6) NOT NULL DEFAULT '1.000000',
-  `valid` boolean NOT NULL DEFAULT 'false',
+  `valid` tinyint(1) NOT NULL DEFAULT '0',
   `valid_from` datetime DEFAULT NULL,
   `valid_until` datetime DEFAULT NULL,
   `notes` text DEFAULT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `PREFIX_quote` (
   KEY `id_customer` (`id_customer`),
   KEY `id_quote_status` (`id_quote_status`),
   KEY `valid_until` (`valid_until`)
-) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Table des produits du devis
 CREATE TABLE IF NOT EXISTS `PREFIX_quote_product` (

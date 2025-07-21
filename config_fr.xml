@@ -2,7 +2,7 @@
 <module>
     <name>myquotemanager</name>
     <displayName><![CDATA[Devis Manager]]></displayName>
-    <version><![CDATA[0.0.1]]></version>
+    <version><![CDATA[0.0.4]]></version>
     <description><![CDATA[Module de cr&eacute;ation et de traitement de devis pour Prestashop]]></description>
     <author><![CDATA[PageFlottante]]></author>
     <tab><![CDATA[front_office_features]]></tab>

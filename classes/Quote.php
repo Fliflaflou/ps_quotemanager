@@ -118,17 +118,22 @@ class Quote extends ObjectModel
                 'valid' => [
                     'type' => self::TYPE_BOOL,
                     'validate' => 'isBool',
-                    'copy_post' => false
+                    'copy_post' => false,
+                    'allow_null' => false  // ✅ Devis non valide par défaut
                 ],
+
                 'date_add' => [
                     'type' => self::TYPE_DATE,
                     'validate' => 'isDate',
-                    'copy_post' => false
+                    'copy_post' => false,
+                    'allow_null' => 'now'  // ✅ Date actuelle à la création
                 ],
+
                 'date_upd' => [
                     'type' => self::TYPE_DATE,
-                    'validate' => 'isDate',
-                    'copy_post' => false
+                    'validate' => 'isDate', 
+                    'copy_post' => false,
+                    'allow_null' => 'now'  // ✅ Date actuelle à la mise à jour
                 ]
             ]
         ];
