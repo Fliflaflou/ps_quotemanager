@@ -16,14 +16,22 @@ class MyQuoteManager extends Module
         $this->bootstrap = true;
 
         parent::__construct();
-        
+
+        if (!$this->loadClasses()) {
+            PrestaShopLogger::addLog('MyQuoteManager: Classes non chargées (uninstall en cours ?)', 1);
+        }
         $this->displayName = $this->l('Devis Manager');
         $this->description = $this->l('Module de création et de traitement de devis pour Prestashop');
         $this->ps_versions_compliancy = array('min' => '8.0.0', 'max' => _PS_VERSION_);
     }
     
-    private function loadClasses()
+    private function loadClasses(): bool
     {
+        // NE PAS CHARGER DURANT LA DÉSINSTALLATION
+        if ($this->isUninstalling()) {
+            return false;
+        }
+
         $baseDir = _PS_MODULE_DIR_ . $this->name . '/';
         
         $classFiles = [
@@ -32,24 +40,43 @@ class MyQuoteManager extends Module
             'classes/QuoteProduct.php', 
             'classes/QuoteStatus.php',
             
-            // Interfaces
-            'hooks/HookInterface.php',
-            
             // Hooks
-            'hooks/DisplayHeaderHook.php',
-            'hooks/DisplayCustomerAccountHook.php',
-            'hooks/DisplayAdminOrderHook.php',
-            'hooks/ActionValidateOrderHook.php',
+            'hooks/displayHeaderHook.php',
+            'hooks/displayCustomerAccountHook.php',
+            'hooks/displayAdminOrderHook.php',
+            'hooks/actionValidateOrderHook.php',
         ];
         
-        foreach ($classFiles as $file) {
-            $filepath = $baseDir . $file;
-            if (!file_exists($filepath)) {
-                throw new Exception("Missing class file: {$file}");
+        try {
+            foreach ($classFiles as $file) {
+                $filepath = $baseDir . $file;
+                if (!file_exists($filepath)) {
+                    PrestaShopLogger::addLog("MyQuoteManager: Missing class file: {$file}", 2);
+                    return false; // ← RETURN FALSE au lieu d'Exception
+                }
+                require_once $filepath;
             }
-            require_once $filepath;
+            return true;
+        } catch (Exception $e) {
+            PrestaShopLogger::addLog("MyQuoteManager: Error loading classes: " . $e->getMessage(), 3);
+            return false;
         }
     }
+
+    /**
+     * Détecte si on est en cours de désinstallation
+     */
+    private function isUninstalling(): bool
+    {
+        return (
+            defined('PS_INSTALLATION_IN_PROGRESS') ||
+            isset($_GET['uninstall']) ||
+            isset($_POST['uninstall']) ||
+            (isset($_POST['action']) && $_POST['action'] === 'uninstall') ||
+            (isset($_GET['configure']) && isset($_GET['uninstall']))
+        );
+    }
+
 
     public function install()
     {
@@ -161,8 +188,20 @@ class MyQuoteManager extends Module
     // Hook pour ajouter des assets dans le header
     public function hookDisplayHeader(array $params = []): string
     {
-        $hook = new Ps_QuoteManagerDisplayHeaderHook($this);
-        return $hook->render($params ?? []);
+        // DEBUG: Vérifier que le hook est appelé
+        error_log("=== HOOK DisplayHeader APPELÉ ===");
+        
+        try {
+            $hook = new MyQuoteManagerDisplayHeaderHook($this);
+            $html = $hook->render($params ?? []);
+            
+            error_log("HTML généré: " . $html);
+            return $html;
+            
+        } catch (Exception $e) {
+            error_log("ERREUR hook DisplayHeader: " . $e->getMessage());
+            return "<!-- ERREUR HOOK -->";
+        }
     }
 
     // Hook pour afficher le lien dans le compte client
