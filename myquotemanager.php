@@ -39,6 +39,9 @@ class MyQuoteManager extends Module
             'classes/Quote.php',
             'classes/QuoteProduct.php', 
             'classes/QuoteStatus.php',
+
+            //Services
+            'src/Service/OrderToQuoteConverter.php',
             
             // Hooks
             'hooks/displayHeaderHook.php',
