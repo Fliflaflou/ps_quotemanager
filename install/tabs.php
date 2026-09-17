@@ -26,7 +26,7 @@ class QuoteSystemTabsInstaller
      */
     public function uninstall()
     {
-        return $this->uninstallTab('AdminQuoteController')
+        return $this->uninstallTab('AdminQuote')
             && $this->uninstallTab('AdminQuoteStatus')
             && $this->uninstallTab('AdminQuoteSettings');
     }
@@ -37,7 +37,7 @@ class QuoteSystemTabsInstaller
     private function installQuoteTab()
     {
         $tab = new Tab();
-        $tab->class_name = 'AdminQuoteController';
+        $tab->class_name = 'AdminQuote';
         $tab->module = $this->module->name;
         $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentOrders');
         $tab->icon = 'description';
@@ -46,7 +46,7 @@ class QuoteSystemTabsInstaller
         // Multilingue
         $tab->name = [];
         foreach (Language::getLanguages() as $lang) {
-            $tab->name[$lang['id_lang']] = 'Devis';
+            $tab->name[$lang['id_lang']] = 'Liste des devis';
         }
         
         return $tab->add();
@@ -60,7 +60,7 @@ class QuoteSystemTabsInstaller
         $tab = new Tab();
         $tab->class_name = 'AdminQuoteStatus';
         $tab->module = $this->module->name;
-        $tab->id_parent = (int)Tab::getIdFromClassName('AdminQuoteController');
+        $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentOrders');
         $tab->icon = 'flag';
         $tab->position = 2;
         
@@ -80,7 +80,7 @@ class QuoteSystemTabsInstaller
         $tab = new Tab();
         $tab->class_name = 'AdminQuoteSettings';
         $tab->module = $this->module->name;
-        $tab->id_parent = (int)Tab::getIdFromClassName('AdminQuoteController');
+        $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentOrders');
         $tab->icon = 'cogs';
         $tab->position = 3;
         

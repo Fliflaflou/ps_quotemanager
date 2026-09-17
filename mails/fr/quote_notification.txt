@@ -1,0 +1,7 @@
+Bonjour,
+
+Un événement concernant le devis {quote_reference} vient de se produire dans la boutique {shop_name}.
+
+Événement : {event}
+Client : {customer_name}
+Nouveau statut : {status_name}

@@ -85,7 +85,7 @@
                             {/if}
                         </td>
                         <td class="center">
-                            <span class="badge badge-{if isset($quote.status_color)}{$quote.status_color|escape:'html':'UTF-8'}{else}default{/if}">
+                            <span class="badge"{if isset($quote.status_color)} style="background-color: {$quote.status_color|escape:'html':'UTF-8'}; color: #fff;"{/if}>
                                 {if isset($quote.status_name)}
                                     {$quote.status_name|escape:'html':'UTF-8'}
                                 {else}
@@ -95,8 +95,8 @@
                         </td>
                         <td class="text-right">
                             <strong>
-                                {if isset($quote.total_paid_tax_incl)}
-                                    {$quote.total_paid_tax_incl|number_format:2:',':' '} €
+                                {if isset($quote.total_paid)}
+                                    {$quote.total_paid|number_format:2:',':' '} €
                                 {else}
                                     0,00 €
                                 {/if}
@@ -110,9 +110,9 @@
                             {/if}
                         </td>
                         <td class="center">
-                            {if isset($quote.date_expired) && $quote.date_expired != '0000-00-00 00:00:00'}
-                                <span class="{if isset($quote.is_expired) && $quote.is_expired}text-danger{else}text-success{/if}">
-                                    {$quote.date_expired|date_format:'%d/%m/%Y'}
+                            {if isset($quote.date_exp) && $quote.date_exp != '0000-00-00'}
+                                <span>
+                                    {$quote.date_exp|date_format:'%d/%m/%Y'}
                                 </span>
                             {else}
                                 <em class="text-muted">{l s='Aucune' mod='myquotemanager'}</em>
@@ -151,7 +151,7 @@
             <div class="col-lg-12">
                 <div class="alert alert-info">
                     <i class="icon-info-circle"></i>
-                    {l s='Total des devis afichés' mod='myquotemanager'} : <strong>{$quotes|count}</strong>
+                    {l s='Total des devis affichés' mod='myquotemanager'} : <strong>{$quotes|count}</strong>
                     {if isset($total_amount)}
                         | {l s='Montant total' mod='myquotemanager'} : <strong>{$total_amount|number_format:2:',':' '} €</strong>
                     {/if}

@@ -16,19 +16,6 @@ class MyQuoteManagerDisplayHeaderHook
 
     public function render(array $params = []): string
     {
-        // Test simple - ajout CSS inline pour vérifier
-        return '<style id="quote-manager-header-hook">
-                    body::before {
-                        content: "🎯 HOOK DisplayHeader ACTIF - Quote Manager";
-                        position: fixed;
-                        top: 0;
-                        right: 0;
-                        background: #28a745;
-                        color: white;
-                        padding: 5px 10px;
-                        font-size: 12px;
-                        z-index: 9999;
-                    }
-                </style>';
+        return '';
     }
 }

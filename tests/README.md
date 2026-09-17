@@ -7,7 +7,7 @@
 ## Utilisation
 ```bash
 # Nettoyer avant tests
-php test/fixtures/clean_test_data.php
+php tests/fixtures/clean_test_data.php
 
 # Lancer les tests
-php test/integration/test_crud.php
+php tests/integration/test_crud.php

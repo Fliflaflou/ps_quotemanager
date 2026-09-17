@@ -1,5 +1,5 @@
 <?php
-// test/test_crud.php
+// tests/integration/test_crud.php
 
 // Depuis le fichier test/, on remonte d'un niveau vers le module, puis 2 niveaux vers PrestaShop
 $prestashop_root = dirname(__FILE__) . '/../../../../';
@@ -81,9 +81,24 @@ try {
         // Test 4: Récupérer le devis
         $quote_loaded = new Quote($quote->id);
         echo "✅ Devis rechargé - Référence : " . $quote_loaded->reference . "\n";
+
+        // Test 5: Modifier le statut du devis
+        echo "\n4. Test changement de statut...\n";
+        $target_status = isset($statuses[1]) ? $statuses[1] : $first_status;
+        $quote->id_quote_status = (int)$target_status['id_quote_status'];
+        if ($quote->update()) {
+            $quote_status_check = new Quote($quote->id);
+            if ((int)$quote_status_check->id_quote_status === (int)$target_status['id_quote_status']) {
+                echo "✅ Statut du devis modifie\n";
+            } else {
+                echo "❌ Statut du devis non persiste\n";
+            }
+        } else {
+            echo "❌ Echec modification statut\n";
+        }
         
-        // Test 5: Ajouter un produit au devis
-        echo "\n4. Test ajout produit...\n";
+        // Test 6: Ajouter un produit au devis
+        echo "\n5. Test ajout produit...\n";
         
         // Vérifier qu'un produit existe
         $product_exists = Db::getInstance()->getValue('
@@ -130,9 +145,24 @@ try {
             
             if ($quote_product_result !== false) {
                 echo "✅ Produit ajouté au devis\n";
+
+                // Test 7: Refuser une quantite superieure au stock restant
+                echo "\n6.5. Test limite de stock...\n";
+                $remaining_stock = QuoteProduct::getAvailableQuantityForQuote($quote->id, $product_exists);
+                $overflow_product = QuoteProduct::addProductToQuote(
+                    $quote->id,
+                    $product_exists,
+                    0,
+                    $remaining_stock + 1,
+                    10.00,
+                    12.00
+                );
+                echo $overflow_product === false
+                    ? "✅ Survente refusee\n"
+                    : "❌ Survente acceptee\n";
                 
-                // Test 6: Calculer les totaux
-                echo "\n5. Test calcul totaux...\n";
+                // Test 8: Calculer les totaux
+                echo "\n7. Test calcul totaux...\n";
                 if ($quote->calculateTotals()) {
                     $quote->update();
                     echo "✅ Totaux calculés - Total HT: " . $quote->total_products . "€\n";
@@ -141,12 +171,27 @@ try {
                     echo "❌ Erreur calcul totaux\n";
                 }
                 
-                // Test 7: Récupérer les produits du devis
-                echo "\n6. Test récupération produits...\n";
+                // Test 9: Récupérer les produits du devis
+                echo "\n8. Test récupération produits...\n";
                 $products = QuoteProduct::getByQuote($quote->id);
                 echo "Nombre de produits : " . count($products) . "\n";
                 foreach ($products as $product) {
-                    echo "  - Produit ID: {$product['id_product']}, Qty: {$product['quantity']}, Prix HT: {$product['unit_price_tax_excl']}€\n";
+                    echo "  - Produit ID: {$product['id_product']}, Qty: {$product['quantity']}, Prix HT: {$product['price_tax_excl']}€\n";
+                }
+
+                // Test 10: Supprimer le produit et verifier le recalcul
+                echo "\n9. Test suppression produit et recalcul...\n";
+                $product_to_remove = new QuoteProduct($products[0]['id_quote_product']);
+                if ($product_to_remove->delete()) {
+                    $quote->updateTotals();
+                    $remaining_products = QuoteProduct::getByQuote($quote->id);
+                    if (count($remaining_products) === 0 && (float) $quote->total_products === 0.0) {
+                        echo "✅ Produit supprime et totaux remis a zero\n";
+                    } else {
+                        echo "❌ Recalcul incorrect apres suppression\n";
+                    }
+                } else {
+                    echo "❌ Echec suppression produit\n";
                 }
                 
             } else {
@@ -156,6 +201,11 @@ try {
         
     } else {
         echo "❌ Échec de création du devis\n";
+    }
+
+    if (isset($quote) && Validate::isLoadedObject($quote) && $quote->id) {
+        echo "\n10. Nettoyage du devis de test...\n";
+        echo $quote->delete() ? "✅ Devis de test supprime\n" : "❌ Echec nettoyage devis\n";
     }
     
 } catch (Exception $e) {

@@ -10,7 +10,7 @@ class MyQuoteManager extends Module
     {
         $this->name = 'myquotemanager';
         $this->tab = 'front_office_features';
-        $this->version = '0.0.4';
+        $this->version = '0.2.4';
         $this->author = 'PageFlottante';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -37,11 +37,12 @@ class MyQuoteManager extends Module
         $classFiles = [
             // Classes métier
             'classes/Quote.php',
-            'classes/QuoteProduct.php', 
+            'classes/QuoteProduct.php',
             'classes/QuoteStatus.php',
+            'classes/StockReservation.php',
 
             //Services
-            'src/Service/OrderToQuoteConverter.php',
+            // 'src/Service/OrderToQuoteConverter.php',
             
             // Hooks
             'hooks/displayHeaderHook.php',
@@ -234,10 +235,14 @@ class MyQuoteManager extends Module
     // Hook pour traiter la validation de commande
     public function hookActionValidateOrder(?array $params = null): bool
     {
+        if (!class_exists('Ps_QuoteManagerActionValidateOrderHook')) {
+            return true;
+        }
+
         try {
             $hook = new Ps_QuoteManagerActionValidateOrderHook($this);
             return $hook->execute($params ?? []);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             PrestaShopLogger::addLog('QuoteManager Action Error: ' . $e->getMessage(), 3);
             return false;
         }

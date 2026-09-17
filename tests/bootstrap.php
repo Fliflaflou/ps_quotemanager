@@ -1,9 +1,9 @@
 <?php
-// test/bootstrap.php - Configuration Docker
+// tests/bootstrap.php - Configuration Docker
 
 // === CHEMINS DOCKER CORRIGÉS ===
-// Depuis modules/myquotemanager/test/ vers data/
-$prestashop_root = dirname(__FILE__) . '/../../../data/';
+// Depuis modules/myquotemanager/tests/ vers la racine PrestaShop Docker.
+$prestashop_root = dirname(__FILE__) . '/../../../';
 
 echo "=== INITIALISATION TESTS DOCKER ===\n";
 echo "Répertoire tests : " . dirname(__FILE__) . "\n";

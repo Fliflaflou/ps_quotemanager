@@ -16,10 +16,6 @@ class Ps_QuoteManagerDisplayCustomerAccountHook
 
     public function render(array $params = []): string
     {
-        // Test simple - affichage message
-        return '<div class="alert alert-info">
-                    <strong>🎯 HOOK DisplayCustomerAccount ACTIF !</strong>
-                    <br>Module Quote Manager chargé avec succès.
-                </div>';
+        return '';
     }
 }
