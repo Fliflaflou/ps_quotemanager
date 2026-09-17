@@ -18,10 +18,10 @@ class Quote extends ObjectModel
     public $total_products_wt;
     public $total_discount;
     public $total_discount_wt;
-    public $global_reduction_percent;
-    public $global_reduction_amount;
-    public $total_global_discount;
-    public $total_global_discount_wt;
+    public $global_reduction_percent = 0;
+    public $global_reduction_amount = 0;
+    public $total_global_discount = 0;
+    public $total_global_discount_wt = 0;
     public $total_shipping;
     public $total_shipping_wt;
     public $total_paid;

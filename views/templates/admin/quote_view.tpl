@@ -485,8 +485,8 @@
                 {if $quote->total_discount > 0 || $quote->total_discount_wt > 0}
                 <tr style="background-color: #fff3cd;">
                     <th colspan="5">{l s='Réductions produits' mod='myquotemanager'}</th>
-                    <th id="total-discount-excl" style="color: #d9534f;">-{displayPrice price=$quote->total_discount currency=$quote->id_currency}</th>
-                    <th id="total-discount-incl" style="color: #d9534f;">-{displayPrice price=$quote->total_discount_wt currency=$quote->id_currency}</th>
+                    <th id="total-discount-excl" style="color: #d9534f;">-{displayPrice price=$quote->total_discount|default:0|floatval currency=$quote->id_currency}</th>
+                    <th id="total-discount-incl" style="color: #d9534f;">-{displayPrice price=$quote->total_discount_wt|default:0|floatval currency=$quote->id_currency}</th>
                     <th colspan="3"></th>
                 </tr>
                 {/if}
@@ -518,17 +518,17 @@
                         </div>
                     </td>
                     <td id="global-discount-excl" style="color: #0088cc; font-weight: bold;">
-                        -{displayPrice price=$quote->total_global_discount currency=$quote->id_currency}
+                        -{displayPrice price=$quote->total_global_discount|default:0|floatval currency=$quote->id_currency}
                     </td>
                     <td id="global-discount-incl" style="color: #0088cc; font-weight: bold;">
-                        -{displayPrice price=$quote->total_global_discount_wt currency=$quote->id_currency}
+                        -{displayPrice price=$quote->total_global_discount_wt|default:0|floatval currency=$quote->id_currency}
                     </td>
                     <td></td>
                 </tr>
                 <tr class="success">
                     <th colspan="5">{l s='Total du devis' mod='myquotemanager'}</th>
-                    <th id="total-quote-excl">{displayPrice price=$quote->total_paid_tax_excl currency=$quote->id_currency}</th>
-                    <th id="total-quote-incl">{displayPrice price=$quote->total_paid currency=$quote->id_currency}</th>
+                    <th id="total-quote-excl">{displayPrice price=$quote->total_paid_tax_excl|default:0|floatval currency=$quote->id_currency}</th>
+                    <th id="total-quote-incl">{displayPrice price=$quote->total_paid|default:0|floatval currency=$quote->id_currency}</th>
                     <th colspan="3"></th>
                 </tr>
             </tfoot>
