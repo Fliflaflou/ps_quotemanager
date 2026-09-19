@@ -64,7 +64,17 @@ class QuoteOrderConverter
             ? $this->getValidCarrierId($id_carrier)
             : $this->getValidCarrierId((int) $quote->id_carrier);
 
-        if (!$cart->add()) {
+        try {
+            $cartCreated = $cart->add();
+        } catch (Throwable $exception) {
+            if ((int) $cart->id > 0) {
+                $cart->delete();
+            }
+
+            return $this->fail($this->formatCartCreationError($exception));
+        }
+
+        if (!$cartCreated) {
             return $this->fail('Impossible de creer le panier de la commande');
         }
 
@@ -186,6 +196,43 @@ class QuoteOrderConverter
         }
 
         return $order;
+    }
+
+    private function formatCartCreationError(Throwable $exception)
+    {
+        $message = $exception->getMessage();
+
+        if (stripos($message, 'last_seek_key') !== false) {
+            $hookModules = $this->getCartAddHookModuleNames();
+            $moduleHint = $hookModules
+                ? ' Modules branches sur l ajout panier : ' . implode(', ', $hookModules) . '.'
+                : '';
+
+            return 'Impossible de creer le panier : un module tiers utilise la colonne SQL manquante '
+                . '`last_seek_key`.' . $moduleHint
+                . ' Mettez a jour ou reinstallez le module concerne afin d executer sa migration de base de donnees.';
+        }
+
+        return 'Impossible de creer le panier : ' . $message;
+    }
+
+    private function getCartAddHookModuleNames()
+    {
+        try {
+            $rows = Db::getInstance()->executeS(
+                'SELECT DISTINCT m.`name` FROM `' . _DB_PREFIX_ . 'module` m'
+                . ' INNER JOIN `' . _DB_PREFIX_ . 'hook_module` hm ON hm.`id_module` = m.`id_module`'
+                . ' INNER JOIN `' . _DB_PREFIX_ . 'hook` h ON h.`id_hook` = hm.`id_hook`'
+                . ' WHERE m.`active` = 1'
+                . ' AND hm.`id_shop` = ' . (int) Context::getContext()->shop->id
+                . ' AND h.`name` IN ("actionObjectAddAfter", "actionObjectCartAddAfter")'
+                . ' ORDER BY m.`name`'
+            );
+
+            return array_values(array_filter(array_column((array) $rows, 'name')));
+        } catch (Throwable $exception) {
+            return [];
+        }
     }
 
     private function getCustomerAddressId(Quote $quote, Customer $customer)
