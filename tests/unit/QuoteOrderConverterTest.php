@@ -32,12 +32,19 @@ class QuoteOrderConverterTest
             return;
         }
 
-        $this->testCannotConvertEmptyQuote();
-        $this->testBasicConversionWithoutDiscount();
-        $this->testConversionWithProductAndGlobalDiscount();
-        $this->testConvertingTwiceReturnsSameOrder();
+        try {
+            $this->testCannotConvertEmptyQuote();
+            $this->testBasicConversionWithoutDiscount();
+            $this->testConversionWithProductAndGlobalDiscount();
+            $this->testConvertingTwiceReturnsSameOrder();
+            $this->testMissingThirdPartyColumnDiagnostic();
+        } catch (Throwable $exception) {
+            echo "   ❌ Exception de test : {$exception->getMessage()}\n\n";
+            $this->test_results['unexpected_exception'] = 'FAILED';
+        } finally {
+            $this->cleanup();
+        }
 
-        $this->cleanup();
         $this->displayResults();
     }
 
@@ -78,6 +85,7 @@ class QuoteOrderConverterTest
     private function newQuote()
     {
         $quote = new Quote();
+        $quote->reference = 'QOC' . date('ymdHis') . strtoupper(substr(uniqid(), -6));
         $quote->id_customer = $this->customer_id;
         $quote->id_currency = (int) Configuration::get('PS_CURRENCY_DEFAULT') ?: 1;
         $quote->id_lang = (int) Configuration::get('PS_LANG_DEFAULT') ?: 1;
@@ -85,7 +93,9 @@ class QuoteOrderConverterTest
         $quote->id_address_delivery = $this->address_id;
         $quote->id_address_invoice = $this->address_id;
         $quote->valid = 0;
-        $quote->add();
+        if (!$quote->add() || !Validate::isLoadedObject($quote)) {
+            throw new RuntimeException('Impossible de créer le devis de test ' . $quote->reference);
+        }
         $this->created_quote_ids[] = (int) $quote->id;
 
         return $quote;
@@ -207,6 +217,25 @@ class QuoteOrderConverterTest
             $second_order && (int) $second_order->id === (int) $first_order->id,
             'La reconversion renvoie la commande existante au lieu d\'en créer une nouvelle',
             'reconversion_idempotent'
+        );
+        echo "\n";
+    }
+
+    public function testMissingThirdPartyColumnDiagnostic()
+    {
+        echo "5. Diagnostic d'un hook tiers avec colonne SQL manquante...\n";
+
+        $method = new ReflectionMethod(QuoteOrderConverter::class, 'formatCartCreationError');
+        $method->setAccessible(true);
+        $message = $method->invoke(
+            $this->converter(),
+            new RuntimeException("Unknown column 'ets.last_seek_key' in 'field list'")
+        );
+
+        $this->assertTrue(
+            strpos($message, 'last_seek_key') !== false && strpos($message, 'module tiers') !== false,
+            'La panne SQL tierce produit un message BO explicite',
+            'third_party_hook_diagnostic'
         );
         echo "\n";
     }

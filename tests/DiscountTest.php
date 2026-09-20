@@ -275,9 +275,8 @@ class DiscountTest
         $this->assertTrue(!QuoteProduct::updateReduction($p1->id, 10, 0), 'Product reduction rejected once quote is linked to an order');
         $this->assertTrue(!$quote->applyGlobalDiscount(10, 0), 'Global reduction rejected once quote is linked to an order');
 
-        // Unlock so cleanup() can delete it
-        $quote->id_order = 0;
-        $quote->update();
+        // Quote::update() intentionally preserves an existing order link; tests must restore their synthetic link directly.
+        Db::getInstance()->update('quote', ['id_order' => 0], '`id_quote` = ' . (int) $quote->id);
         echo "\n";
     }
 }

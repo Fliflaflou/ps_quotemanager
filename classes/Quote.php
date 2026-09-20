@@ -339,18 +339,31 @@ class Quote extends ObjectModel
 
     public function delete()
     {
-        $stock_was_released = StockReservation::releaseQuoteStock((int) $this->id);
+        $id_quote = (int) $this->id;
+        $stock_was_released = StockReservation::releaseQuoteStock($id_quote);
         if (!$stock_was_released) {
             return false;
         }
 
-        if (parent::delete()) {
-            Db::getInstance()->delete('stock_reservation', '`id_quote` = ' . (int) $this->id);
+        $db = Db::getInstance();
+        $db->execute('START TRANSACTION');
+
+        try {
+            if (!$db->delete('quote_product', '`id_quote` = ' . $id_quote)
+                || !$db->delete('stock_reservation', '`id_quote` = ' . $id_quote)
+                || !parent::delete()) {
+                throw new RuntimeException('Unable to delete quote data');
+            }
+
+            $db->execute('COMMIT');
             return true;
+        } catch (Throwable $exception) {
+            $db->execute('ROLLBACK');
+            PrestaShopLogger::addLog('Quote deletion failed: ' . $exception->getMessage(), 3, null, 'Quote', $id_quote);
         }
 
         if (self::statusLocksStock($this->id_quote_status)) {
-            StockReservation::synchronizeQuoteStock((int) $this->id);
+            StockReservation::synchronizeQuoteStock($id_quote);
         }
 
         return false;
