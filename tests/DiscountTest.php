@@ -62,7 +62,8 @@ class DiscountTest
         $product_row = $db->executeS(
             'SELECT p.id_product FROM ' . _DB_PREFIX_ . 'product p'
             . ' INNER JOIN ' . _DB_PREFIX_ . 'stock_available sa ON sa.id_product = p.id_product AND sa.id_product_attribute = 0'
-            . ' WHERE p.active = 1 ORDER BY sa.quantity DESC LIMIT 1'
+            . ' WHERE p.active = 1 AND NOT EXISTS (SELECT 1 FROM ' . _DB_PREFIX_ . 'product_attribute pa WHERE pa.id_product = p.id_product)'
+            . ' ORDER BY sa.quantity DESC LIMIT 1'
         );
         $this->product_id = (int) ($product_row[0]['id_product'] ?? 0);
         $this->status_id = (int) ($db->executeS('SELECT id_quote_status FROM ' . _DB_PREFIX_ . 'quote_status ORDER BY id_quote_status LIMIT 1')[0]['id_quote_status'] ?? 0);

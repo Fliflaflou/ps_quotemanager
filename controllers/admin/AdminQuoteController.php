@@ -315,12 +315,12 @@ class AdminQuoteController extends ModuleAdminController
         $this->addJS($this->module->getPathUri() . 'views/js/admin_quote_form.js');
 
         // Options pour les clients
-        $customers = Customer::getCustomers();
+        $customers = $this->getCustomersSortedByName();
         $customer_options = [];
         foreach ($customers as $customer) {
             $customer_options[] = [
                 'id_option' => $customer['id_customer'],
-                'name' => $customer['firstname'] . ' ' . $customer['lastname'] . ' (' . $customer['email'] . ')'
+            'name' => $customer['lastname'] . ' ' . $customer['firstname'] . ' (' . $customer['email'] . ')'
             ];
         }
         
@@ -565,12 +565,12 @@ class AdminQuoteController extends ModuleAdminController
         $products = $this->buildCatalogProductsForQuoteForm($id_quote);
 
         // Liste des clients pour le changement de client
-        $customers = Customer::getCustomers();
+        $customers = $this->getCustomersSortedByName();
         $customer_options = [];
         foreach ($customers as $customer_row) {
             $customer_options[] = [
                 'id_customer' => (int) $customer_row['id_customer'],
-                'name' => $customer_row['firstname'] . ' ' . $customer_row['lastname'] . ' (' . $customer_row['email'] . ')',
+                'name' => $customer_row['lastname'] . ' ' . $customer_row['firstname'] . ' (' . $customer_row['email'] . ')',
             ];
         }
 
@@ -1646,6 +1646,17 @@ class AdminQuoteController extends ModuleAdminController
 
         $this->confirmations[] = $this->l('Le devis a été rattaché au nouveau client');
         return true;
+    }
+
+    private function getCustomersSortedByName()
+    {
+        $customers = Customer::getCustomers();
+        usort($customers, function ($first, $second) {
+            return strnatcasecmp($first['lastname'], $second['lastname'])
+                ?: strnatcasecmp($first['firstname'], $second['firstname']);
+        });
+
+        return $customers;
     }
 
     /**

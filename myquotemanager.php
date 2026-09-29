@@ -10,7 +10,7 @@ class MyQuoteManager extends Module
     {
         $this->name = 'myquotemanager';
         $this->tab = 'front_office_features';
-        $this->version = '0.2.4';
+        $this->version = '0.2.5';
         $this->author = 'PageFlottante';
         $this->need_instance = 0;
         $this->bootstrap = true;

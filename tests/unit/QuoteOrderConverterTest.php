@@ -62,7 +62,8 @@ class QuoteOrderConverterTest
         $rows = $db->executeS(
             'SELECT p.id_product FROM ' . _DB_PREFIX_ . 'product p'
             . ' INNER JOIN ' . _DB_PREFIX_ . 'stock_available sa ON sa.id_product = p.id_product AND sa.id_product_attribute = 0'
-            . ' WHERE p.active = 1 ORDER BY sa.quantity DESC LIMIT 2'
+            . ' WHERE p.active = 1 AND NOT EXISTS (SELECT 1 FROM ' . _DB_PREFIX_ . 'product_attribute pa WHERE pa.id_product = p.id_product)'
+            . ' ORDER BY sa.quantity DESC LIMIT 2'
         );
         $this->product_ids = array_map(function ($row) {
             return (int) $row['id_product'];

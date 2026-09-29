@@ -573,6 +573,7 @@ class Quote extends ObjectModel
             }
 
             $lines[] = [
+                'id_quote_product' => (int) $product['id_quote_product'],
                 'id_product' => (int) $product['id_product'],
                 'id_product_attribute' => (int) $product['id_product_attribute'],
                 'quantity' => (int) $product['quantity'],
@@ -702,7 +703,7 @@ class Quote extends ObjectModel
 
         $valid = true;
         foreach ($this->getProducts() as $product) {
-            if (!$cart->updateQty((int) $product['quantity'], (int) $product['id_product'], (int) $product['id_product_attribute'], false, 'up', $idAddress)) {
+            if (!$cart->updateQty((int) $product['quantity'], (int) $product['id_product'], (int) $product['id_product_attribute'], false, 'up', $idAddress, null, true, true)) {
                 $valid = false;
                 break;
             }
@@ -713,11 +714,14 @@ class Quote extends ObjectModel
             $options = $cart->getDeliveryOptionList(null, true);
             $carrierFound = false;
             foreach ((array) ($options[$idAddress] ?? []) as $optionKey => $option) {
-                if (isset($option['carrier_list'][$idCarrier])) {
+                if (!empty($option['unique_carrier'])
+                    && isset($option['carrier_list'][$idCarrier])
+                    && $option['carrier_list'][$idCarrier]['price_without_tax'] !== false
+                    && $option['carrier_list'][$idCarrier]['price_with_tax'] !== false) {
                     $carrierFound = true;
                     $cart->setDeliveryOption([$idAddress => $optionKey]);
-                    $shipping['tax_excl'] = (float) $cart->getPackageShippingCost($idCarrier, false);
-                    $shipping['tax_incl'] = (float) $cart->getPackageShippingCost($idCarrier, true);
+                    $shipping['tax_excl'] = (float) $option['carrier_list'][$idCarrier]['price_without_tax'];
+                    $shipping['tax_incl'] = (float) $option['carrier_list'][$idCarrier]['price_with_tax'];
                     break;
                 }
             }

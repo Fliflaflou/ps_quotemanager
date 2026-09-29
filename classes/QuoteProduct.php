@@ -143,6 +143,16 @@ class QuoteProduct extends ObjectModel {
             return false;
         }
 
+        if ($id_product_attribute <= 0 && $product->hasAttributes()) {
+            return false;
+        }
+        if ($id_product_attribute > 0) {
+            $combination = new Combination((int) $id_product_attribute);
+            if (!Validate::isLoadedObject($combination) || (int) $combination->id_product !== (int) $id_product) {
+                return false;
+            }
+        }
+
         // Check if quote exists
         $quote = new Quote($id_quote);
         if (!Validate::isLoadedObject($quote)) {

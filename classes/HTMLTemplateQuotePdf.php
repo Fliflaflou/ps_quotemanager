@@ -35,6 +35,16 @@ class HTMLTemplateQuotePdf extends HTMLTemplate
             }
         }
         $carrier = (int) $this->quote->id_carrier > 0 ? new Carrier((int) $this->quote->id_carrier, $this->quote->id_lang) : null;
+        $products = QuoteProduct::getByQuote((int) $this->quote->id);
+        $calculatedLines = [];
+        foreach ($this->quote->computeProductLines() as $line) {
+            $calculatedLines[$line['id_quote_product']] = $line;
+        }
+        foreach ($products as &$product) {
+            $line = $calculatedLines[(int) $product['id_quote_product']] ?? null;
+            $product['net_tax_incl'] = $line ? $line['net_tax_incl'] : (float) $product['total_price_tax_incl'];
+        }
+        unset($product);
 
         $this->smarty->assign([
             'quote' => $this->quote,
@@ -45,7 +55,7 @@ class HTMLTemplateQuotePdf extends HTMLTemplate
                 ? ($customer_address->phone ?: $customer_address->phone_mobile)
                 : null,
             'currency' => $currency,
-            'products' => QuoteProduct::getByQuote((int) $this->quote->id),
+            'products' => $products,
             'shop_name' => Configuration::get('PS_SHOP_NAME', null, null, $shop_id),
             'shop_details' => Configuration::get('PS_SHOP_DETAILS', null, null, $shop_id),
             'shop_address' => $shop_address,

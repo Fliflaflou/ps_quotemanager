@@ -7,7 +7,7 @@ table { width: 100%; border-collapse: collapse; }
 .section-title { color: #363a41; font-size: 11pt; font-weight: bold; }
 .document-meta td { padding: 2px 0; }
 .products th { background-color: #363a41; color: #ffffff; font-size: 8pt; font-weight: bold; }
-.products th, .products td { border: 1px solid #d9e1e4; padding: 7px 6px; }
+.products th, .products td { border: 1px solid #d9e1e4; padding: 6px 3px; }
 .products .product-name { font-weight: bold; }
 .totals { width: 40%; margin-left: 60%; }
 .totals td { border-bottom: 1px solid #d9e1e4; padding: 6px; }
@@ -40,7 +40,7 @@ table { width: 100%; border-collapse: collapse; }
     <tr>
         <td width="50%" class="party-block">
             <span class="section-title">{l s='Émetteur' mod='myquotemanager'}</span><br>
-            {if $shop_company}{$shop_company|escape:'html':'UTF-8'}<br>{/if}
+            {if $shop_company && $shop_company != $shop_name}{$shop_company|escape:'html':'UTF-8'}<br>{/if}
             <span>{$shop_name|escape:'html':'UTF-8'}</span><br>
             {if $shop_address}{$shop_address|escape:'html':'UTF-8'}<br>{/if}
             {if $shop_phone}{$shop_phone|escape:'html':'UTF-8'}<br>{/if}
@@ -66,21 +66,21 @@ table { width: 100%; border-collapse: collapse; }
 <table class="products">
     <thead>
         <tr>
-            <th width="38%">{l s='Produit' mod='myquotemanager'}</th>
-            <th width="16%">{l s='Déclinaison' mod='myquotemanager'}</th>
-            <th width="9%" class="text-right">{l s='Qté' mod='myquotemanager'}</th>
-            <th width="18%" class="text-right">{l s='Prix unitaire HT' mod='myquotemanager'}</th>
-            <th width="19%" class="text-right">{l s='Total TTC' mod='myquotemanager'}</th>
+            <th width="42%">{l s='Produit' mod='myquotemanager'}</th>
+            <th width="22%">{l s='Déclinaison' mod='myquotemanager'}</th>
+            <th width="6%" class="text-right">{l s='Qté' mod='myquotemanager'}</th>
+            <th width="15%" class="text-right">{l s='Prix unitaire HT' mod='myquotemanager'}</th>
+            <th width="15%" class="text-right">{l s='Total remisé TTC' mod='myquotemanager'}</th>
         </tr>
     </thead>
     <tbody>
         {foreach from=$products item=product}
         <tr>
-            <td class="product-name">{$product.product_name|escape:'html':'UTF-8'}</td>
-            <td>{if $product.product_attributes}{$product.product_attributes|escape:'html':'UTF-8'}{else}{$product.product_reference|escape:'html':'UTF-8'}{/if}</td>
-            <td class="text-right">{$product.quantity|intval}</td>
-            <td class="text-right">{$product.price_tax_excl|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'}</td>
-            <td class="text-right">{$product.total_price_tax_incl|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'}</td>
+            <td width="42%" class="product-name">{$product.product_name|escape:'html':'UTF-8'}</td>
+            <td width="22%">{if $product.product_attributes}{$product.product_attributes|escape:'html':'UTF-8'}{else}{$product.product_reference|escape:'html':'UTF-8'}{/if}</td>
+            <td width="6%" class="text-right">{$product.quantity|intval}</td>
+            <td width="15%" class="text-right">{$product.price_tax_excl|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'}</td>
+            <td width="15%" class="text-right">{$product.net_tax_incl|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'}</td>
         </tr>
         {/foreach}
     </tbody>
@@ -89,6 +89,18 @@ table { width: 100%; border-collapse: collapse; }
 <br>
 
 <table class="totals">
+    {if $quote->total_discount_wt > 0}
+    <tr>
+        <td>{l s='Remises produits TTC (incluses dans les lignes)' mod='myquotemanager'}</td>
+        <td class="text-right">-{$quote->total_discount_wt|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'}</td>
+    </tr>
+    {/if}
+    {if $quote->total_global_discount_wt > 0}
+    <tr>
+        <td>{l s='Remise globale TTC' mod='myquotemanager'}</td>
+        <td class="text-right">-{$quote->total_global_discount_wt|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'}</td>
+    </tr>
+    {/if}
     <tr>
         <td>{l s='Total HT' mod='myquotemanager'}</td>
         <td class="text-right">{$quote->total_paid_tax_excl|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'}</td>

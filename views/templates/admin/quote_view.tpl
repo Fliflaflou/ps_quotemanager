@@ -348,8 +348,11 @@
             </form>
         </div>
         
-        {if $quote_products && count($quote_products) > 0}
-        <table class="table table-striped" id="quote-products-table">
+        <div id="quote-empty-products" class="alert alert-warning"{if $quote_products && count($quote_products) > 0} style="display:none;"{/if}>
+            <i class="icon-warning"></i>
+            {l s='Aucun produit dans ce devis' mod='myquotemanager'}
+        </div>
+        <table class="table table-striped" id="quote-products-table"{if !$quote_products || count($quote_products) == 0} style="display:none;"{/if}>
             <thead>
                 <tr>
                     <th>{l s='Produit' mod='myquotemanager'}</th>
@@ -533,12 +536,6 @@
                 </tr>
             </tfoot>
         </table>
-        {else}
-        <div class="alert alert-warning">
-            <i class="icon-warning"></i>
-            {l s='Aucun produit dans ce devis' mod='myquotemanager'}
-        </div>
-        {/if}
     </div>
 </div>
 
@@ -901,7 +898,9 @@ $(document).ready(function() {
 
             // Pre-select the combination flagged as default in PrestaShop so the
             // user only needs to act when they want a different one.
-            var $defaultOption = $attributeSelect.find('option[data-id-product]:visible[data-is-default="1"]').first();
+            var $defaultOption = $attributeSelect.find('option[data-is-default="1"]').filter(function() {
+                return String($(this).attr('data-id-product')) === String($product.val());
+            }).first();
             if ($defaultOption.length) {
                 $attributeSelect.val($defaultOption.val());
                 $('#id-product-attribute').val($defaultOption.val());
@@ -1029,6 +1028,14 @@ $(document).ready(function() {
             isValid = false;
         } else {
             setFieldError($product, '');
+        }
+
+        var $attribute = $('#product-attribute-select');
+        if ($('#product-attribute-panel').is(':visible') && !parseInt($attribute.val(), 10)) {
+            setFieldError($attribute, '{l s='Sélectionnez une déclinaison.' mod='myquotemanager' js=1}');
+            isValid = false;
+        } else {
+            setFieldError($attribute, '');
         }
 
         if (!parseInt($quantity.val(), 10) || parseInt($quantity.val(), 10) <= 0) {
@@ -1232,6 +1239,8 @@ $(document).ready(function() {
         }
 
         $tbody.append(rowHtml);
+        $('#quote-empty-products').hide();
+        $('#quote-products-table').show();
         updateProductCount();
     }
 
@@ -1605,6 +1614,10 @@ $(document).ready(function() {
 
                 $row.remove();
                 updateTotals(response.totals);
+                if (!$('#quote-products-table tbody tr').length) {
+                    $('#quote-products-table').hide();
+                    $('#quote-empty-products').show();
+                }
                 lastRemovedProduct = removedSnapshot;
 
                 if (undoTimer) {
