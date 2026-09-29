@@ -402,13 +402,11 @@
                         {/if}
                     </td>
                     <td>
-                        <div class="input-group quote-quantity-editor">
+                        <div class="quote-quantity-editor">
                             <input type="number" class="form-control input-sm product-quantity-input" value="{$product.quantity|intval}" min="1" max="{$product.maximum_quantity|intval}" data-original-quantity="{$product.quantity|intval}">
-                            <span class="input-group-btn">
-                                <button type="button" class="btn btn-default btn-sm update-quantity-btn" title="{l s='Mettre à jour la quantité' mod='myquotemanager'}">
-                                    <i class="icon-check"></i>
-                                </button>
-                            </span>
+                            <button type="button" class="btn btn-primary btn-xs quote-apply-btn update-quantity-btn" title="{l s='Mettre à jour la quantité' mod='myquotemanager'}">
+                                <i class="icon-check"></i> {l s='Appliquer' mod='myquotemanager'}
+                            </button>
                         </div>
                         {if $product.stock_shortage}
                             <p class="text-danger quote-stock-shortage">
@@ -422,28 +420,25 @@
                     <td class="total-excl">{displayPrice price=$total_excl currency=$quote->id_currency}</td>
                     <td class="total-incl">{displayPrice price=$total_incl currency=$quote->id_currency}</td>
                     <td>
-                        <div class="input-group input-group-sm quote-reduction-editor" style="margin-bottom: 5px;">
-                            <input type="number" class="form-control input-sm product-reduction-percent" 
-                                   value="{$product.reduction_percent|floatval}" 
-                                   min="0" max="100" step="0.01" 
-                                   placeholder="%"
-                                   data-original-reduction-percent="{$product.reduction_percent|floatval}"
-                                   title="{l s='Réduction en pourcentage (0-100%)' mod='myquotemanager'}">
-                            <span class="input-group-addon">%</span>
-                        </div>
-                        <div class="input-group input-group-sm quote-reduction-editor">
-                            <input type="number" class="form-control input-sm product-reduction-amount" 
-                                   value="{$product.reduction_amount|floatval}" 
-                                   min="0" step="0.01" 
+                        <div class="quote-reduction-editor">
+                            <div class="quote-input-suffix">
+                                <input type="number" class="form-control input-sm product-reduction-percent"
+                                       value="{$product.reduction_percent|floatval}"
+                                       min="0" max="100" step="0.01"
+                                       data-original-reduction-percent="{$product.reduction_percent|floatval}"
+                                       title="{l s='Réduction en pourcentage (0-100%)' mod='myquotemanager'}">
+                                <span class="quote-input-suffix__unit">%</span>
+                            </div>
+                            <input type="number" class="form-control input-sm product-reduction-amount"
+                                   value="{$product.reduction_amount|floatval}"
+                                   min="0" step="0.01"
                                    placeholder="€"
                                    data-original-reduction-amount="{$product.reduction_amount|floatval}"
                                    title="{l s='Réduction montant fixe' mod='myquotemanager'}">
-                            <span class="input-group-btn">
-                                <button type="button" class="btn btn-default btn-sm update-reduction-btn" 
-                                        title="{l s='Appliquer la réduction' mod='myquotemanager'}">
-                                    <i class="icon-check"></i>
-                                </button>
-                            </span>
+                            <button type="button" class="btn btn-primary btn-xs quote-apply-btn update-reduction-btn"
+                                    title="{l s='Appliquer la réduction' mod='myquotemanager'}">
+                                <i class="icon-check"></i> {l s='Appliquer' mod='myquotemanager'}
+                            </button>
                         </div>
                     </td>
                     {assign var="reduction_tax_excl" value=0}
@@ -498,26 +493,25 @@
                         <i class="icon-tag"></i> {l s='Réduction globale du devis' mod='myquotemanager'}
                     </th>
                     <td style="padding: 8px;">
-                        <div class="input-group input-group-sm quote-reduction-editor" style="margin-bottom: 5px;">
-                            <input type="number" id="global-reduction-percent" class="form-control input-sm" 
-                                   value="{$quote->global_reduction_percent|floatval}" 
-                                   min="0" max="100" step="0.01" 
-                                   placeholder="%"
-                                   title="{l s='Réduction en pourcentage sur l’ensemble du devis (0-100%)' mod='myquotemanager'}">
-                            <span class="input-group-addon">%</span>
-                        </div>
-                        <div class="input-group input-group-sm quote-reduction-editor">
-                            <input type="number" id="global-reduction-amount" class="form-control input-sm" 
-                                   value="{$quote->global_reduction_amount|floatval}" 
-                                   min="0" step="0.01" 
+                        <div class="quote-reduction-editor">
+                            <div class="quote-input-suffix">
+                                <input type="number" id="global-reduction-percent" class="form-control input-sm"
+                                       value="{$quote->global_reduction_percent|floatval}"
+                                       min="0" max="100" step="0.01"
+                                       data-original-value="{$quote->global_reduction_percent|floatval}"
+                                       title="{l s='Réduction en pourcentage sur l’ensemble du devis (0-100%)' mod='myquotemanager'}">
+                                <span class="quote-input-suffix__unit">%</span>
+                            </div>
+                            <input type="number" id="global-reduction-amount" class="form-control input-sm"
+                                   value="{$quote->global_reduction_amount|floatval}"
+                                   min="0" step="0.01"
                                    placeholder="€"
+                                   data-original-value="{$quote->global_reduction_amount|floatval}"
                                    title="{l s='Réduction montant fixe sur l’ensemble du devis' mod='myquotemanager'}">
-                            <span class="input-group-btn">
-                                <button type="button" id="update-global-reduction-btn" class="btn btn-primary btn-sm"
-                                        title="{l s='Appliquer la réduction globale' mod='myquotemanager'}">
-                                    <i class="icon-check"></i> {l s='Appliquer' mod='myquotemanager'}
-                                </button>
-                            </span>
+                            <button type="button" id="update-global-reduction-btn" class="btn btn-primary btn-xs quote-apply-btn"
+                                    title="{l s='Appliquer la réduction globale' mod='myquotemanager'}">
+                                <i class="icon-check"></i> {l s='Appliquer' mod='myquotemanager'}
+                            </button>
                         </div>
                     </td>
                     <td id="global-discount-excl" style="color: #0088cc; font-weight: bold;">
@@ -623,23 +617,51 @@
     margin-top: 0;
 }
 .quote-quantity-editor {
-    min-width: 120px;
+    min-width: 90px;
 }
 .quote-quantity-editor .product-quantity-input {
     text-align: right;
 }
-.quote-quantity-editor .update-quantity-btn:disabled {
+.quote-apply-btn {
+    display: none;
+    width: 100%;
+    margin-top: 5px;
+}
+.quote-apply-btn.is-visible {
+    display: block;
+}
+.quote-apply-btn:disabled {
     cursor: wait;
 }
 .quote-reduction-editor {
     min-width: 100px;
 }
-.quote-reduction-editor .product-reduction-percent,
-.quote-reduction-editor .product-reduction-amount {
+.quote-reduction-editor > .form-control,
+.quote-reduction-editor > .quote-input-suffix {
+    margin-bottom: 5px;
+}
+.quote-reduction-editor .form-control {
     text-align: right;
 }
-.quote-reduction-editor .update-reduction-btn:disabled {
-    cursor: wait;
+.quote-input-suffix {
+    position: relative;
+}
+.quote-input-suffix .form-control {
+    padding-right: 22px;
+    -moz-appearance: textfield;
+}
+.quote-input-suffix .form-control::-webkit-outer-spin-button,
+.quote-input-suffix .form-control::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.quote-input-suffix__unit {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    color: #6c868e;
+    pointer-events: none;
 }
 .quote-reduction-editor input.input-error {
     border-color: #d9534f;
@@ -1198,6 +1220,7 @@ $(document).ready(function() {
             return;
         }
 
+        var applyButtonHtml = '<i class="icon-check"></i> {l s='Appliquer' mod='myquotemanager' js=1}';
         var totalExcl = parseFloat(product.total_excl || 0).toFixed(2);
         var totalIncl = parseFloat(product.total_incl || 0).toFixed(2);
         var reductionPercent = parseFloat(product.reduction_percent || 0);
@@ -1208,19 +1231,19 @@ $(document).ready(function() {
             '<tr data-quote-product-id="' + product.id_quote_product + '" data-id-product="' + product.id_product + '" data-id-product-attribute="' + (product.id_product_attribute || 0) + '" data-quantity="' + product.quantity + '" data-price-tax-excl="' + parseFloat(product.price_tax_excl || 0).toFixed(6) + '" data-price-tax-incl="' + parseFloat(product.price_tax_incl || 0).toFixed(6) + '">' +
                 '<td>' + (product.name || ('Produit #' + product.id_product)) + (product.attributes ? ' <small class="text-muted">(' + product.attributes + ')</small>' : '') + '</td>' +
                 '<td>' + (product.reference || 'N/A') + '</td>' +
-                '<td><div class="input-group quote-quantity-editor"><input type="number" class="form-control input-sm product-quantity-input" value="' + product.quantity + '" min="1" max="' + (product.maximum_quantity || product.quantity) + '" data-original-quantity="' + product.quantity + '"><span class="input-group-btn"><button type="button" class="btn btn-default btn-sm update-quantity-btn"><i class="icon-check"></i></button></span></div></td>' +
+                '<td><div class="quote-quantity-editor"><input type="number" class="form-control input-sm product-quantity-input" value="' + product.quantity + '" min="1" max="' + (product.maximum_quantity || product.quantity) + '" data-original-quantity="' + product.quantity + '"><button type="button" class="btn btn-primary btn-xs quote-apply-btn update-quantity-btn">' + applyButtonHtml + '</button></div></td>' +
                 '<td>' + formatMoney(product.price_tax_excl || 0) + '</td>' +
                 '<td>' + formatMoney(product.price_tax_incl || 0) + '</td>' +
                 '<td class="total-excl">' + formatMoney(totalExcl) + '</td>' +
                 '<td class="total-incl">' + formatMoney(totalIncl) + '</td>' +
                 '<td>' +
-                    '<div class="input-group input-group-sm quote-reduction-editor" style="margin-bottom: 5px;">' +
-                        '<input type="number" class="form-control input-sm product-reduction-percent" value="' + reductionPercent + '" min="0" max="100" step="0.01" placeholder="%" data-original-reduction-percent="' + reductionPercent + '">' +
-                        '<span class="input-group-addon">%</span>' +
-                    '</div>' +
-                    '<div class="input-group input-group-sm quote-reduction-editor">' +
+                    '<div class="quote-reduction-editor">' +
+                        '<div class="quote-input-suffix">' +
+                            '<input type="number" class="form-control input-sm product-reduction-percent" value="' + reductionPercent + '" min="0" max="100" step="0.01" data-original-reduction-percent="' + reductionPercent + '">' +
+                            '<span class="quote-input-suffix__unit">%</span>' +
+                        '</div>' +
                         '<input type="number" class="form-control input-sm product-reduction-amount" value="' + reductionAmount + '" min="0" step="0.01" placeholder="' + currencySymbol + '" data-original-reduction-amount="' + reductionAmount + '">' +
-                        '<span class="input-group-btn"><button type="button" class="btn btn-default btn-sm update-reduction-btn"><i class="icon-check"></i></button></span>' +
+                        '<button type="button" class="btn btn-primary btn-xs quote-apply-btn update-reduction-btn">' + applyButtonHtml + '</button>' +
                     '</div>' +
                 '</td>' +
                 '<td class="total-excl-after">' + formatMoney(totalExclAfter) + '</td>' +
@@ -1359,6 +1382,35 @@ $(document).ready(function() {
         });
     });
 
+    var applyButtonLabel = '<i class="icon-check"></i> {l s='Appliquer' mod='myquotemanager' js=1}';
+
+    function valueChanged($input, originalAttr) {
+        var current = parseFloat($input.val());
+        var original = parseFloat($input.attr(originalAttr)) || 0;
+
+        if (isNaN(current)) {
+            return original !== 0 || $.trim($input.val()) !== '';
+        }
+
+        return Math.abs(current - original) > 0.000001;
+    }
+
+    function refreshQuantityApply($row) {
+        $row.find('.update-quantity-btn').toggleClass('is-visible', valueChanged($row.find('.product-quantity-input'), 'data-original-quantity'));
+    }
+
+    function refreshReductionApply($row) {
+        var changed = valueChanged($row.find('.product-reduction-percent'), 'data-original-reduction-percent')
+            || valueChanged($row.find('.product-reduction-amount'), 'data-original-reduction-amount');
+        $row.find('.update-reduction-btn').toggleClass('is-visible', changed);
+    }
+
+    function refreshGlobalApply() {
+        var changed = valueChanged($('#global-reduction-percent'), 'data-original-value')
+            || valueChanged($('#global-reduction-amount'), 'data-original-value');
+        $('#update-global-reduction-btn').toggleClass('is-visible', changed);
+    }
+
     function updateProductQuantity($row) {
         var $input = $row.find('.product-quantity-input');
         var $button = $row.find('.update-quantity-btn');
@@ -1415,7 +1467,8 @@ $(document).ready(function() {
                 showToast('{l s='Erreur technique lors de la mise à jour de la quantité.' mod='myquotemanager' js=1}', 'error');
             },
             complete: function() {
-                $button.prop('disabled', false).html('<i class="icon-check"></i>');
+                $button.prop('disabled', false).html(applyButtonLabel);
+                refreshQuantityApply($row);
             }
         });
     }
@@ -1480,7 +1533,8 @@ $(document).ready(function() {
                 showToast('{l s='Erreur technique lors de la mise à jour de la réduction.' mod='myquotemanager' js=1}', 'error');
             },
             complete: function() {
-                $button.prop('disabled', false).html('<i class="icon-check"></i>');
+                $button.prop('disabled', false).html(applyButtonLabel);
+                refreshReductionApply($row);
             }
         });
     }
@@ -1529,8 +1583,8 @@ $(document).ready(function() {
                 }
 
                 // Update input values
-                $percentInput.val(response.global_reduction_percent);
-                $amountInput.val(response.global_reduction_amount);
+                $percentInput.val(response.global_reduction_percent).attr('data-original-value', response.global_reduction_percent);
+                $amountInput.val(response.global_reduction_amount).attr('data-original-value', response.global_reduction_amount);
 
                 // Update global discount display
                 $('#global-discount-excl').text('-' + formatMoney(response.global_discount_excl));
@@ -1547,10 +1601,23 @@ $(document).ready(function() {
                 showToast('{l s='Erreur technique lors de la mise à jour de la réduction globale.' mod='myquotemanager' js=1}', 'error');
             },
             complete: function() {
-                $button.prop('disabled', false).html('<i class="icon-check"></i> {l s='Appliquer' mod='myquotemanager' js=1}');
+                $button.prop('disabled', false).html(applyButtonLabel);
+                refreshGlobalApply();
             }
         });
     }
+
+    $(document).on('input change', '.product-quantity-input', function() {
+        refreshQuantityApply($(this).closest('tr'));
+    });
+
+    $(document).on('input change', '.product-reduction-percent, .product-reduction-amount', function() {
+        refreshReductionApply($(this).closest('tr'));
+    });
+
+    $(document).on('input change', '#global-reduction-percent, #global-reduction-amount', function() {
+        refreshGlobalApply();
+    });
 
     $(document).on('click', '.update-quantity-btn', function() {
         updateProductQuantity($(this).closest('tr'));
