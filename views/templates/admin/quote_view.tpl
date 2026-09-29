@@ -428,7 +428,7 @@
                                 </select>
                             </div>
                             {if $line_mixed}
-                                <p class="help-block quote-reduction-legacy">{l s='Actuelle :' mod='myquotemanager'} {$product.reduction_percent|floatval} % + {$product.reduction_amount|floatval} €</p>
+                                <p class="help-block quote-reduction-legacy">{l s='Réduction combinée en vigueur :' mod='myquotemanager'} {$product.reduction_percent|floatval} % + {$product.reduction_amount|floatval} €</p>
                             {/if}
                             <button type="button" class="btn btn-primary btn-xs quote-apply-btn update-reduction-btn"
                                     title="{l s='Appliquer la réduction' mod='myquotemanager'}">
@@ -507,7 +507,7 @@
                                 </select>
                             </div>
                             {if $global_mixed}
-                                <p class="help-block quote-reduction-legacy">{l s='Actuelle :' mod='myquotemanager'} {$quote->global_reduction_percent|floatval} % + {$quote->global_reduction_amount|floatval} €</p>
+                                <p class="help-block quote-reduction-legacy">{l s='Réduction combinée en vigueur :' mod='myquotemanager'} {$quote->global_reduction_percent|floatval} % + {$quote->global_reduction_amount|floatval} €</p>
                             {/if}
                             <button type="button" id="update-global-reduction-btn" class="btn btn-primary btn-xs quote-apply-btn"
                                     title="{l s='Appliquer la réduction globale' mod='myquotemanager'}">
@@ -1430,6 +1430,17 @@ $(document).ready(function() {
         $editor.find('.quote-reduction-legacy').remove();
     }
 
+    function confirmLegacyReplacement($editor, reduction) {
+        var $legacy = $editor.find('.quote-reduction-legacy');
+        if (!$legacy.length) {
+            return true;
+        }
+
+        return confirm($.trim($legacy.text()) + '\n'
+            + '{l s='Elle sera remplacée par :' mod='myquotemanager' js=1} ' + reduction.value + ' ' + (reduction.isPercent ? '%' : currencySymbol) + '\n'
+            + '{l s='Continuer ?' mod='myquotemanager' js=1}');
+    }
+
     function refreshReductionApply($row) {
         $row.find('.update-reduction-btn').toggleClass('is-visible', reductionEditorChanged($row.find('.quote-reduction-editor')));
     }
@@ -1515,6 +1526,10 @@ $(document).ready(function() {
             return;
         }
 
+        if (!confirmLegacyReplacement($editor, reduction)) {
+            return;
+        }
+
         $valueInput.removeClass('input-error');
         $button.prop('disabled', true).html('<i class="icon-refresh icon-spin"></i>');
 
@@ -1567,6 +1582,10 @@ $(document).ready(function() {
         if (error) {
             $valueInput.addClass('input-error').focus();
             showToast(error, 'error');
+            return;
+        }
+
+        if (!confirmLegacyReplacement($editor, reduction)) {
             return;
         }
 
