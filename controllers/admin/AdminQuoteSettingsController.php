@@ -33,6 +33,10 @@ class AdminQuoteSettingsController extends ModuleAdminController
         $expirationNotificationEnabled = (int) Tools::getValue('PS_QUOTEMANAGER_EXPIRATION_NOTIFICATION_ENABLED', 0);
         $expirationNotificationDays = max(0, (int) Tools::getValue('PS_QUOTEMANAGER_EXPIRATION_NOTIFICATION_DAYS', 3));
         $paymentInfo = (string) Tools::getValue('PS_QUOTEMANAGER_PAYMENT_INFO', '');
+        $pdfPriceDisplay = (string) Tools::getValue('PS_QUOTEMANAGER_PDF_PRICE_DISPLAY', 'tax_incl');
+        if (!array_key_exists($pdfPriceDisplay, $this->getPdfPriceDisplayOptions())) {
+            $pdfPriceDisplay = 'tax_incl';
+        }
 
         Configuration::updateValue('PS_QUOTEMANAGER_REFERENCE_PREFIX', $referencePrefix);
         Configuration::updateValue('PS_QUOTEMANAGER_REFERENCE_DATE_ORDER', $referenceDateOrder);
@@ -41,6 +45,7 @@ class AdminQuoteSettingsController extends ModuleAdminController
         Configuration::updateValue('PS_QUOTEMANAGER_EXPIRATION_NOTIFICATION_ENABLED', $expirationNotificationEnabled);
         Configuration::updateValue('PS_QUOTEMANAGER_EXPIRATION_NOTIFICATION_DAYS', $expirationNotificationDays);
         Configuration::updateValue('PS_QUOTEMANAGER_PAYMENT_INFO', $paymentInfo);
+        Configuration::updateValue('PS_QUOTEMANAGER_PDF_PRICE_DISPLAY', $pdfPriceDisplay);
 
         // Compatibilité avec les installations anciennes
         Configuration::updateValue('QUOTE_REFERENCE_PREFIX', $referencePrefix);
@@ -71,6 +76,15 @@ class AdminQuoteSettingsController extends ModuleAdminController
         return $default;
     }
 
+    private function getPdfPriceDisplayOptions()
+    {
+        return [
+            'tax_incl' => $this->l('TTC'),
+            'tax_excl' => $this->l('HT'),
+            'both' => $this->l('HT et TTC'),
+        ];
+    }
+
     public function initContent()
     {
         if (!$this->viewAccess()) {
@@ -97,6 +111,7 @@ class AdminQuoteSettingsController extends ModuleAdminController
         $expirationNotificationEnabled = (int) $this->getConfigValue('PS_QUOTEMANAGER_EXPIRATION_NOTIFICATION_ENABLED', 'QUOTE_EXPIRATION_NOTIFICATION_ENABLED', 0);
         $expirationNotificationDays = max(0, (int) $this->getConfigValue('PS_QUOTEMANAGER_EXPIRATION_NOTIFICATION_DAYS', 'QUOTE_EXPIRATION_NOTIFICATION_DAYS', 3));
         $paymentInfo = (string) $this->getConfigValue('PS_QUOTEMANAGER_PAYMENT_INFO', 'QUOTE_PAYMENT_INFO', '');
+        $pdfPriceDisplay = (string) Configuration::get('PS_QUOTEMANAGER_PDF_PRICE_DISPLAY', null, null, null, 'tax_incl');
 
         $currentIndex = $this->context->link->getAdminLink('AdminQuoteSettings');
         $token = Tools::getAdminTokenLite('AdminQuoteSettings');
@@ -167,6 +182,16 @@ class AdminQuoteSettingsController extends ModuleAdminController
         $html .= '<label class="control-label col-lg-3" for="PS_QUOTEMANAGER_PAYMENT_INFO">' . $this->l('Informations de paiement (PDF)') . '</label>';
         $html .= '<div class="col-lg-9"><textarea id="PS_QUOTEMANAGER_PAYMENT_INFO" name="PS_QUOTEMANAGER_PAYMENT_INFO" rows="4" class="form-control">' . htmlspecialchars((string) $paymentInfo, ENT_QUOTES, 'UTF-8') . '</textarea></div>';
         $html .= '<div class="col-lg-9 col-lg-offset-3"><p class="help-block">' . $this->l('Affiché en bas du devis PDF : RIB, ordre de chèque, SIRET, etc. Une ligne par information.') . '</p></div>';
+        $html .= '</div>';
+
+        $html .= '<div class="form-group">';
+        $html .= '<label class="control-label col-lg-3" for="PS_QUOTEMANAGER_PDF_PRICE_DISPLAY">' . $this->l('Affichage des prix (PDF)') . '</label>';
+        $html .= '<div class="col-lg-4"><select id="PS_QUOTEMANAGER_PDF_PRICE_DISPLAY" name="PS_QUOTEMANAGER_PDF_PRICE_DISPLAY" class="form-control">';
+        foreach ($this->getPdfPriceDisplayOptions() as $value => $label) {
+            $html .= '<option value="' . $value . '"' . ($pdfPriceDisplay === $value ? ' selected="selected"' : '') . '>' . $label . '</option>';
+        }
+        $html .= '</select></div>';
+        $html .= '<div class="col-lg-5"><p class="help-block">' . $this->l('Prix unitaires, totaux de ligne, remises et transport. Le récapitulatif Total HT / TVA / Total TTC reste toujours affiché.') . '</p></div>';
         $html .= '</div>';
 
         $html .= '<div class="panel-footer">';

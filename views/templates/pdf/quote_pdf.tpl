@@ -63,24 +63,34 @@ table { width: 100%; border-collapse: collapse; }
 
 <br><br>
 
+{if $price_display == 'both'}
+    {assign var=w_name value='30%'}{assign var=w_attr value='18%'}{assign var=w_price value='11.5%'}
+{else}
+    {assign var=w_name value='42%'}{assign var=w_attr value='22%'}{assign var=w_price value='15%'}
+{/if}
+
 <table class="products">
     <thead>
         <tr>
-            <th width="42%">{l s='Produit' mod='myquotemanager'}</th>
-            <th width="22%">{l s='Déclinaison' mod='myquotemanager'}</th>
+            <th width="{$w_name}">{l s='Produit' mod='myquotemanager'}</th>
+            <th width="{$w_attr}">{l s='Déclinaison' mod='myquotemanager'}</th>
             <th width="6%" class="text-right">{l s='Qté' mod='myquotemanager'}</th>
-            <th width="15%" class="text-right">{l s='Prix unitaire HT' mod='myquotemanager'}</th>
-            <th width="15%" class="text-right">{l s='Total remisé TTC' mod='myquotemanager'}</th>
+            {if $price_display != 'tax_incl'}<th width="{$w_price}" class="text-right">{l s='Prix unitaire HT' mod='myquotemanager'}</th>{/if}
+            {if $price_display != 'tax_excl'}<th width="{$w_price}" class="text-right">{l s='Prix unitaire TTC' mod='myquotemanager'}</th>{/if}
+            {if $price_display != 'tax_incl'}<th width="{$w_price}" class="text-right">{l s='Total remisé HT' mod='myquotemanager'}</th>{/if}
+            {if $price_display != 'tax_excl'}<th width="{$w_price}" class="text-right">{l s='Total remisé TTC' mod='myquotemanager'}</th>{/if}
         </tr>
     </thead>
     <tbody>
         {foreach from=$products item=product}
         <tr>
-            <td width="42%" class="product-name">{$product.product_name|escape:'html':'UTF-8'}</td>
-            <td width="22%">{if $product.product_attributes}{$product.product_attributes|escape:'html':'UTF-8'}{else}{$product.product_reference|escape:'html':'UTF-8'}{/if}</td>
+            <td width="{$w_name}" class="product-name">{$product.product_name|escape:'html':'UTF-8'}</td>
+            <td width="{$w_attr}">{if $product.product_attributes}{$product.product_attributes|escape:'html':'UTF-8'}{else}{$product.product_reference|escape:'html':'UTF-8'}{/if}</td>
             <td width="6%" class="text-right">{$product.quantity|intval}</td>
-            <td width="15%" class="text-right">{$product.price_tax_excl|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'}</td>
-            <td width="15%" class="text-right">{$product.net_tax_incl|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'}</td>
+            {if $price_display != 'tax_incl'}<td width="{$w_price}" class="text-right">{$product.price_tax_excl|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'}</td>{/if}
+            {if $price_display != 'tax_excl'}<td width="{$w_price}" class="text-right">{$product.price_tax_incl|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'}</td>{/if}
+            {if $price_display != 'tax_incl'}<td width="{$w_price}" class="text-right">{$product.net_tax_excl|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'}</td>{/if}
+            {if $price_display != 'tax_excl'}<td width="{$w_price}" class="text-right">{$product.net_tax_incl|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'}</td>{/if}
         </tr>
         {/foreach}
     </tbody>
@@ -91,14 +101,22 @@ table { width: 100%; border-collapse: collapse; }
 <table class="totals">
     {if $quote->total_discount_wt > 0}
     <tr>
-        <td>{l s='Remises produits TTC (incluses dans les lignes)' mod='myquotemanager'}</td>
-        <td class="text-right">-{$quote->total_discount_wt|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'}</td>
+        <td>{l s='Remises produits (incluses dans les lignes)' mod='myquotemanager'}</td>
+        <td class="text-right">
+            {if $price_display != 'tax_incl'}-{$quote->total_discount|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'} HT{/if}
+            {if $price_display == 'both'}<br>{/if}
+            {if $price_display != 'tax_excl'}-{$quote->total_discount_wt|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'} TTC{/if}
+        </td>
     </tr>
     {/if}
     {if $quote->total_global_discount_wt > 0}
     <tr>
-        <td>{l s='Remise globale TTC' mod='myquotemanager'}</td>
-        <td class="text-right">-{$quote->total_global_discount_wt|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'}</td>
+        <td>{l s='Remise globale' mod='myquotemanager'}</td>
+        <td class="text-right">
+            {if $price_display != 'tax_incl'}-{$quote->total_global_discount|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'} HT{/if}
+            {if $price_display == 'both'}<br>{/if}
+            {if $price_display != 'tax_excl'}-{$quote->total_global_discount_wt|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'} TTC{/if}
+        </td>
     </tr>
     {/if}
     <tr>
@@ -113,7 +131,11 @@ table { width: 100%; border-collapse: collapse; }
     {/if}
     <tr class="shipping-line">
         <td>{l s='Transport' mod='myquotemanager'}{if $carrier_name} ({$carrier_name|escape:'html':'UTF-8'}){/if}</td>
-        <td class="text-right">{$quote->total_shipping_wt|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'}</td>
+        <td class="text-right">
+            {if $price_display != 'tax_incl'}{$quote->total_shipping|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'} HT{/if}
+            {if $price_display == 'both'}<br>{/if}
+            {if $price_display != 'tax_excl'}{$quote->total_shipping_wt|number_format:2:',':' '} {$currency->sign|escape:'html':'UTF-8'} TTC{/if}
+        </td>
     </tr>
     <tr class="grand-total">
         <td>{l s='Total TTC' mod='myquotemanager'}</td>

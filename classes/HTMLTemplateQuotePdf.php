@@ -43,8 +43,13 @@ class HTMLTemplateQuotePdf extends HTMLTemplate
         foreach ($products as &$product) {
             $line = $calculatedLines[(int) $product['id_quote_product']] ?? null;
             $product['net_tax_incl'] = $line ? $line['net_tax_incl'] : (float) $product['total_price_tax_incl'];
+            $product['net_tax_excl'] = $line ? $line['net_tax_excl'] : (float) $product['total_price_tax_excl'];
         }
         unset($product);
+        $priceDisplay = (string) Configuration::get('PS_QUOTEMANAGER_PDF_PRICE_DISPLAY', null, null, $shop_id, 'tax_incl');
+        if (!in_array($priceDisplay, ['tax_incl', 'tax_excl', 'both'], true)) {
+            $priceDisplay = 'tax_incl';
+        }
 
         $this->smarty->assign([
             'quote' => $this->quote,
@@ -56,6 +61,7 @@ class HTMLTemplateQuotePdf extends HTMLTemplate
                 : null,
             'currency' => $currency,
             'products' => $products,
+            'price_display' => $priceDisplay,
             'shop_name' => Configuration::get('PS_SHOP_NAME', null, null, $shop_id),
             'shop_details' => Configuration::get('PS_SHOP_DETAILS', null, null, $shop_id),
             'shop_address' => $shop_address,
