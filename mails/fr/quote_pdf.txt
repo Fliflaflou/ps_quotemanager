@@ -1,0 +1,7 @@
+Bonjour {firstname} {lastname},
+
+Veuillez trouver votre devis {quote_reference} en pièce jointe de cet e-mail.
+Sa date de validité est fixée au {date_exp}.
+
+Cordialement,
+{shop_name}

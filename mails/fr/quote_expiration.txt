@@ -1,0 +1,8 @@
+Bonjour {firstname} {lastname},
+
+Votre devis {quote_reference} arrive à expiration le {date_exp}.
+
+Nous vous invitons à revenir vers nous si vous souhaitez le confirmer ou le renouveler.
+
+Cordialement,
+{shop_name}
