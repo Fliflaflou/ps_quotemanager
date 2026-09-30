@@ -3,3 +3,10 @@
 .DS_Store
 *~
 /dist/
+
+# Project documentation is kept outside the module repository for now.
+/docs/
+/roadmap*
+**/roadmap*
+**/*.md
+!/README.md
